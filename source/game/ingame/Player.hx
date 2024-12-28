@@ -10,10 +10,11 @@ class Player extends GameSprite
 {
 	public var controls:PlayerControls;
 
-	public var speed:Float = 3.1;
+	public var speed:Float = 8;
 
 	public var holdTimer:Float = 0;
 	public var hitCooldown:Float = 0;
+	public var hitThreshold:Float = 0;
 
 	public var canMove:Bool = true;
 
@@ -72,13 +73,29 @@ class Player extends GameSprite
 
 	public function updateMovement()
 	{
-		for (value in [holdTimer, hitCooldown])
+		canMove = (holdTimer == 0);
+		if (holdTimer > 0)
 		{
-			if (value > 0)
-				value -= FlxG.elapsed;
-			else
-				value = 0;
+			holdTimer -= FlxG.elapsed;
 		}
+		holdTimer = Math.max(0, holdTimer);
+
+		if (hitThreshold > 4)
+		{
+			hitThreshold = 0;
+			hitCooldown = 4;
+		}
+		else
+		{
+			hitThreshold -= FlxG.elapsed * 1.2;
+		}
+		hitThreshold = Math.max(0, hitThreshold);
+
+		if (hitCooldown > 0)
+		{
+			hitCooldown -= FlxG.elapsed;
+		}
+		hitCooldown = Math.max(0, hitCooldown);
 
 		if (canMove)
 		{
@@ -104,7 +121,7 @@ class Player extends GameSprite
 		if (controls.pressed.any([LEFT, DOWN, UP, RIGHT]))
 			animationToPlay = 'walk';
 
-		if (controls.justPressed.any([LEFTHIT, RIGHTHIT, KICK]) && hitCooldown <= 0)
+		if (controls.justPressed.any([LEFTHIT, RIGHTHIT, KICK]) && hitCooldown <= 0 && holdTimer <= 0)
 		{
 			shouldPlayGeneralAnim = false;
 
@@ -113,13 +130,16 @@ class Player extends GameSprite
 			if (controls.justPressed.RIGHTHIT)
 				animationToPlay = 'righthit';
 			if (controls.justPressed.KICK)
+			{
 				animationToPlay = 'kick';
+				hitThreshold += 0.5;
+			}
 
 			playAnimation(animationToPlay, true);
 
 			onSwing.dispatch();
 
-			hitCooldown = 0.15;
+			hitThreshold += 1;
 
 			holdTimer = 0.45;
 		}

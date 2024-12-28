@@ -51,6 +51,6 @@ class TestState extends FlxState
 
 		FlxG.camera.scroll.set(player.x - (FlxG.width / 2) + 64, 0);
 
-		info.text = 'PLAYER POSITION: ${player.getPosition().toString()}\nHOLD TIMER: ${player.holdTimer}';
+		info.text = 'PLAYER POSITION: ${player.getPosition().toString()}\nHOLD TIMER: ${player.holdTimer}\nCOOLDAEFASG: ${player.hitCooldown}\nThresg: ${player.hitThreshold}';
 	}
 }
