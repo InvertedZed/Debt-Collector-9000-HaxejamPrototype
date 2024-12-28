@@ -1,1 +1,4 @@
+# This is very important.
+
 export/*
+.vscode.*
