@@ -24,7 +24,7 @@ class Background extends FlxTypedGroup<FlxSprite>
 				add(background);
 			case 2:
 				var background = new Backdrop(AssetManager.getImage('gameplay/levels/2/back'), X);
-				background.scrollFactor.x = 0.85;
+				background.scrollFactor.x = 0.8;
 				add(background);
 
 				var frontground = new Backdrop(AssetManager.getImage('gameplay/levels/2/front'), X);

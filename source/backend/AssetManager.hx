@@ -92,7 +92,7 @@ class AssetManager
 		return getSoundInternal(path, 'music', musicCache);
 	}
 
-	public static function parseJson(path:String, optionalPath:String = '')
+	public static function getJson(path:String, optionalPath:String = '')
 	{
 		return fileToString(getPath(path + '.json', optionalPath));
 	}

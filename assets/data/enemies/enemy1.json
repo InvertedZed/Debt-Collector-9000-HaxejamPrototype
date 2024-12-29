@@ -1,0 +1,21 @@
+{
+    "name": "Jimmy",
+    "animations": [
+        {
+            "name": "walk",
+            "fps": 5,
+            "offset": [0, 0],
+            "looped": true
+        },
+        {
+            "name": "punch",
+            "fps": 5,
+            "offset": [0, 0]
+        },
+        {
+            "name": "fall",
+            "fps": 5,
+            "offset": [0, 0]
+        }
+    ]
+}

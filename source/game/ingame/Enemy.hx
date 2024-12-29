@@ -1,0 +1,98 @@
+package game.ingame;
+
+import backend.AssetManager;
+import backend.GameSprite;
+import flixel.FlxG;
+import flixel.math.FlxPoint;
+import flixel.path.FlxPath;
+import game.states.Game;
+import haxe.Json;
+
+typedef EnemyAnimation =
+{
+	var name:String;
+	var offset:Array<Int>;
+	var fps:Int;
+	@:optional var looped:Bool;
+}
+
+typedef EnemyJson =
+{
+	@:optional var name:String;
+	var animations:Array<EnemyAnimation>;
+}
+
+enum abstract EnemyType(Int) from Int to Int
+{
+	public var STANDARD1:Int = 1;
+	public var STANDARD2:Int = 2;
+	public var STANDARD3:Int = 3;
+	public var BOSS:Int = 4;
+}
+
+class Enemy extends GameSprite
+{
+	private var enemyData:EnemyJson;
+	private var enemyType:EnemyType = STANDARD1;
+
+	public var distanceNeeded:Float = 25;
+
+	public var parent:Game;
+
+	public function new(type:EnemyType = STANDARD1)
+	{
+		super(0, 0);
+
+		this.enemyType = type;
+
+		frames = AssetManager.getAtlas('gameplay/enemies/enemy${cast (type, Int)}');
+
+		enemyData = Json.parse(AssetManager.getJson('enemies/enemy${cast (type, Int)}', 'data'));
+
+		trace(enemyData);
+
+		for (anim in enemyData.animations)
+		{
+			addAnimation(anim.name, anim.fps, anim.looped ?? false, FlxPoint.get(anim.offset[0], anim.offset[1]));
+		}
+
+		playAnimation('walk', true);
+
+		screenCenter();
+		y += 150;
+
+		path = new FlxPath([]);
+
+		if (FlxG.state is Game)
+			this.parent = cast FlxG.state;
+	}
+
+	public function attack()
+	{
+		if (animation.name != 'punch')
+		{
+			trace('hit this fucking idiot');
+			playAnimation('punch', true);
+		}
+	}
+
+	function approach(a:Float, b:Float, amt:Float)
+	{
+		if (a > b)
+			a = Math.max(a - amt, b);
+		else
+			a = Math.min(a + amt, b);
+		return a;
+	}
+
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		x = approach(x, parent.player.x - (parent.player.frameWidth / 2), elapsed * (45 * 2));
+		y = approach(y, parent.player.y - (parent.player.frameHeight / 2), elapsed * (45));
+
+		if ((Math.abs(parent.player.x - x) <= distanceNeeded))
+			attack();
+	}
+}

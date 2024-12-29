@@ -1,0 +1,16 @@
+{
+    "name": "Howard",
+    "animations": [
+        {
+            "name": "walk",
+            "fps": 5,
+            "offset": [0, 0],
+            "looped": true
+        },
+        {
+            "name": "kaboosh",
+            "fps": 5,
+            "offset": [0, 0]
+        }
+    ]
+}

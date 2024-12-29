@@ -1,0 +1,21 @@
+{
+    "name": "Ambiguous Fuckface",
+    "animations": [
+        {
+            "name": "walk",
+            "fps": 5,
+            "offset": [0, 0],
+            "looped": true
+        },
+        {
+            "name": "shoot",
+            "fps": 5,
+            "offset": [0, 0]
+        },
+        {
+            "name": "fall",
+            "fps": 5,
+            "offset": [0, 0]
+        }
+    ]
+}

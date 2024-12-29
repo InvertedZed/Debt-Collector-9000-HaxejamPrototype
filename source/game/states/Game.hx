@@ -3,16 +3,20 @@ package game.states;
 import backend.AssetManager;
 import backend.Camera;
 import flixel.FlxG;
+import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.text.FlxText;
 import flixel.ui.FlxBar;
 import game.ingame.Background;
+import game.ingame.Enemy;
 import game.ingame.Player;
 
-class TestState extends FlxState
+class Game extends FlxState
 {
 	public var background:Background;
 	public var player:Player;
+
+	public var enemyTest:Enemy;
 
 	public var info:FlxText;
 
@@ -34,8 +38,13 @@ class TestState extends FlxState
 
 		background = new Background(2, player);
 
+		enemyTest = new Enemy(STANDARD1);
+		enemyTest.x += 300;
+
 		add(background);
 		add(player);
+
+		add(enemyTest);
 
 		info = new FlxText();
 		info.font = AssetManager.getFont('default');

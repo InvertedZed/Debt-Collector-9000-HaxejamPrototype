@@ -23,8 +23,6 @@ class Player extends GameSprite
 
 	public var onSwing:FlxSignal = new FlxSignal();
 
-	var offsetMap:Map<String, FlxPoint> = [];
-
 	var internalX:Float = 0;
 	var internalY:Float = 0;
 
@@ -47,25 +45,12 @@ class Player extends GameSprite
 		FlxG.inputs.addInput(controls);
 	}
 
-	public function addAnimation(name:String, fps:Int = 5, looped:Bool = false, position:FlxPoint = null)
-	{
-		if (position == null)
-			position = FlxPoint.get();
-
-		animation.addByPrefix(name, name, fps, looped);
-
-		offsetMap.set(name, position);
-	}
-
-	public function playAnimation(name:String, forced:Bool = false)
+	override public function playAnimation(name:String, forced:Bool = false)
 	{
 		var point = (offsetMap.get(name) ?? FlxPoint.get()).clone();
-		if (animationToPlay == 'idle' || animationToPlay == 'walk')
-			point.x = 16 * 4;
-		if (animationToPlay == 'lefthit' || animationToPlay == 'righthit' || animationToPlay == 'kick')
-			point.x = 16 * 4;
-		if ((animationToPlay == 'lefthit' || animationToPlay == 'righthit' || animationToPlay == 'kick') && flipX)
-			point.x = 42 * 4;
+
+		point.x = ((flipX && ((name != 'idle' && name != 'walk'))) ? 42 : 16) * 4;
+
 		offset = point;
 		animation.play(name, forced);
 	}
