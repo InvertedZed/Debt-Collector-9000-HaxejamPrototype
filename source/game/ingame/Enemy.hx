@@ -35,7 +35,9 @@ class Enemy extends GameSprite
 	private var enemyData:EnemyJson;
 	private var enemyType:EnemyType = STANDARD1;
 
-	public var distanceNeeded:Float = 25;
+	public var distanceNeeded:Float = 120;
+
+	private var cooldown:Float = 1;
 
 	public var parent:Game;
 
@@ -50,12 +52,10 @@ class Enemy extends GameSprite
 		enemyData = Json.parse(AssetManager.getJson('enemies/enemy${cast (type, Int)}', 'data'));
 
 		trace(enemyData);
-
 		for (anim in enemyData.animations)
 		{
 			addAnimation(anim.name, anim.fps, anim.looped ?? false, FlxPoint.get(anim.offset[0], anim.offset[1]));
 		}
-
 		playAnimation('walk', true);
 
 		screenCenter();
@@ -72,8 +72,9 @@ class Enemy extends GameSprite
 		if (animation.name != 'punch')
 		{
 			trace('hit this fucking idiot');
-			playAnimation('punch', true);
+			animation.play('punch', true);
 		}
+		cooldown = 1;
 	}
 
 	function approach(a:Float, b:Float, amt:Float)
@@ -88,11 +89,38 @@ class Enemy extends GameSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		if (cooldown > 0)
+		{
+			cooldown -= FlxG.elapsed;
+			var point:FlxPoint = new FlxPoint();
+			if (flipX)
+				point.x = 44 * 4;
+			else
+				point.x = 16 * 4;
+			point.y = 0;
+			offset = point;
 
-		x = approach(x, parent.player.x - (parent.player.frameWidth / 2), elapsed * (45 * 2));
-		y = approach(y, parent.player.y - (parent.player.frameHeight / 2), elapsed * (45));
+			if (cooldown < 0.5)
+			{
+				var point:FlxPoint = new FlxPoint();
+				point.x = 16 * 4;
+				point.y = 0;
+				offset = point;
+				animation.play('walk', false);
+			}
+		}
+		cooldown = Math.max(0, cooldown);
 
-		if ((Math.abs(parent.player.x - x) <= distanceNeeded))
-			attack();
+		if (cooldown == 0)
+		{
+			var true_player_x = parent.player.x - parent.player.offset.x;
+			x = approach(x, true_player_x, elapsed * (45 * 2));
+			y = approach(y, parent.player.y - (parent.player.frameHeight / 2), elapsed * (45));
+
+			if ((Math.abs(true_player_x - x) <= distanceNeeded))
+				attack();
+
+			flipX = (true_player_x < x);
+		}
 	}
 }
