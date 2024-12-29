@@ -223,6 +223,7 @@ class Enemy extends GameSprite
 							yeeted = false;
 							velocity.x = 0;
 							cooldown = 0;
+							animation.play('walk', true);
 						}
 					}
 				case 2:
