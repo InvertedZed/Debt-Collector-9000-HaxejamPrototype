@@ -70,7 +70,7 @@ class Enemy extends GameSprite
 
 		parent.player.onSwing.add((hitType) ->
 		{
-			if (FlxG.pixelPerfectOverlap(parent.player, this))
+			if (FlxG.pixelPerfectOverlap(parent.player, this, 0))
 			{
 				trace('just hit the mf');
 
