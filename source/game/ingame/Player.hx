@@ -6,6 +6,13 @@ import flixel.FlxG;
 import flixel.math.FlxPoint;
 import flixel.util.FlxSignal;
 
+enum HitType
+{
+	RIGHT;
+	LEFT;
+	KICK;
+}
+
 class Player extends GameSprite
 {
 	public var controls:PlayerControls;
@@ -21,7 +28,7 @@ class Player extends GameSprite
 
 	public var canMove:Bool = true;
 
-	public var onSwing:FlxSignal = new FlxSignal();
+	public var onSwing:FlxTypedSignal<HitType->Void> = new FlxTypedSignal<HitType->Void>();
 
 	var internalX:Float = 0;
 	var internalY:Float = 0;
@@ -120,20 +127,27 @@ class Player extends GameSprite
 		if (controls.justPressed.any([LEFTHIT, RIGHTHIT, KICK]) && hitCooldown <= 0 && holdTimer <= 0)
 		{
 			shouldPlayGeneralAnim = false;
+			var hitType:HitType = LEFT;
 
 			if (controls.justPressed.LEFTHIT)
+			{
 				animationToPlay = 'lefthit';
+			}
 			if (controls.justPressed.RIGHTHIT)
+			{
 				animationToPlay = 'righthit';
+				hitType = RIGHT;
+			}
 			if (controls.justPressed.KICK)
 			{
 				animationToPlay = 'kick';
 				hitThreshold += 0.5;
+				hitType = KICK;
 			}
 
 			playAnimation(animationToPlay, true);
 
-			onSwing.dispatch();
+			onSwing.dispatch(hitType);
 
 			hitThreshold += 1;
 

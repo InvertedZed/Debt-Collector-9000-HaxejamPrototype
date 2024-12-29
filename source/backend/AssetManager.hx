@@ -49,7 +49,7 @@ class AssetManager
 
 	static var registeredFonts:Array<String> = [];
 
-	static var soundExtension:String = 'mp3';
+	static var soundExtension:String = 'wav';
 
 	static var assetManager(get, null):AssetFrontEnd;
 

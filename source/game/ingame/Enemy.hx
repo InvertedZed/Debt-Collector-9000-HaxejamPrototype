@@ -43,6 +43,10 @@ class Enemy extends GameSprite
 
 	public var parent:Game;
 
+	public var dead:Bool = false;
+
+	public var enemyHealth:Float = 1;
+
 	public function new(x:Float = 0, y:Float = 150, type:EnemyType = STANDARD1)
 	{
 		super(0, 0);
@@ -64,14 +68,36 @@ class Enemy extends GameSprite
 		if (FlxG.state is Game)
 			this.parent = cast FlxG.state;
 
-		parent.player.onSwing.add(() ->
+		parent.player.onSwing.add((hitType) ->
 		{
 			if ((Math.abs(parent.player.x - x) <= distanceNeeded))
 			{
 				trace('just hit the mf');
 
-				velocity.y = -150;
-				acceleration.y = 550;
+				enemyHealth -= switch (hitType)
+				{
+					default:
+						0.25;
+					case RIGHT:
+						0.5;
+					case KICK:
+						0;
+				};
+
+				if (enemyHealth <= 0)
+				{
+					dead = true;
+
+					FlxG.camera.shake(0.005, 0.3, null, true, X);
+				}
+				else
+				{
+					trace('yoouch, that shit hurt bro :(');
+
+					FlxG.sound.play(AssetManager.getSound('owie'));
+
+					// super fucking nintendo shit right here
+				}
 			}
 		});
 	}
@@ -98,79 +124,83 @@ class Enemy extends GameSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		switch (enemyType)
-		{
-			default:
-			case 1:
-				distanceNeeded = 192;
-				if (cooldown > 0)
-				{
-					cooldown -= FlxG.elapsed;
-					var point:FlxPoint = new FlxPoint();
-					if (flipX)
-						point.x = 44 * 4;
-					else
-						point.x = 16 * 4;
-					point.y = 0;
-					offset = point;
 
-					if (cooldown < 0.5)
+		if (!dead)
+		{
+			switch (enemyType)
+			{
+				default:
+				case 1:
+					distanceNeeded = 192;
+					if (cooldown > 0)
 					{
+						cooldown -= FlxG.elapsed;
 						var point:FlxPoint = new FlxPoint();
-						point.x = 16 * 4;
+						if (flipX)
+							point.x = 44 * 4;
+						else
+							point.x = 16 * 4;
 						point.y = 0;
 						offset = point;
-						animation.play('walk', false);
+
+						if (cooldown < 0.5)
+						{
+							var point:FlxPoint = new FlxPoint();
+							point.x = 16 * 4;
+							point.y = 0;
+							offset = point;
+							animation.play('walk', false);
+						}
 					}
-				}
-				cooldown = Math.max(0, cooldown);
+					cooldown = Math.max(0, cooldown);
 
-				if (cooldown == 0)
-				{
+					if (cooldown == 0)
+					{
+						var true_player_x = parent.player.x - parent.player.offset.x;
+						var true_player_y = parent.player.y - parent.player.offset.y;
+						x = approach(x, true_player_x, elapsed * (45 * 2));
+						y = approach(y, true_player_y, elapsed * (45));
+
+						if ((Math.abs(true_player_x - x) <= distanceNeeded))
+							attack();
+
+						flipX = (true_player_x < x);
+					}
+				case 2:
+					distanceNeeded = 576;
 					var true_player_x = parent.player.x - parent.player.offset.x;
-					var true_player_y = parent.player.y - parent.player.offset.y;
-					x = approach(x, true_player_x, elapsed * (45 * 2));
-					y = approach(y, true_player_y, elapsed * (45));
 
-					if ((Math.abs(true_player_x - x) <= distanceNeeded))
-						attack();
-
-					flipX = (true_player_x < x);
-				}
-			case 2:
-				distanceNeeded = 576;
-				var true_player_x = parent.player.x - parent.player.offset.x;
-
-				if (Math.abs(true_player_x - x) <= distanceNeeded)
-				{
-					animation.play('shoot', true);
-					var point:FlxPoint = new FlxPoint();
-					if (flipX)
-						point.x = 46 * 4;
+					if (Math.abs(true_player_x - x) <= distanceNeeded)
+					{
+						animation.play('shoot', true);
+						var point:FlxPoint = new FlxPoint();
+						if (flipX)
+							point.x = 46 * 4;
+						else
+							point.x = 16 * 4;
+						point.y = 0;
+						offset = point;
+						new Enemy(x, y, 5);
+					}
 					else
-						point.x = 16 * 4;
-					point.y = 0;
-					offset = point;
-					new Enemy(x, y, 5);
-				}
-				else
-				{
-					x = approach(x, true_player_x + 192, elapsed * (45 * 2));
-					// y = approach(y, parent.player.y - (parent.player.frameHeight / 2), elapsed * (45));
-					animation.play('walk', false);
-					var point:FlxPoint = new FlxPoint();
-					if (flipX)
-						point.x = 36 * 4;
-					else
-						point.x = 16 * 4;
-					point.y = 0;
-					offset = point;
-					flipX = (true_player_x < x);
-				}
-			case 5:
-				var true_player_x = parent.player.x - parent.player.offset.x;
-				animation.play('bullet', false);
-				x = approach(x, true_player_x + 192, elapsed * (78 * 2));
+					{
+						x = approach(x, true_player_x + 192, elapsed * (45 * 2));
+						// y = approach(y, parent.player.y - (parent.player.frameHeight / 2), elapsed * (45));
+						animation.play('walk', false);
+						var point:FlxPoint = new FlxPoint();
+						if (flipX)
+							point.x = 36 * 4;
+						else
+							point.x = 16 * 4;
+						point.y = 0;
+						offset = point;
+						flipX = (true_player_x < x);
+					}
+				case 5:
+					var true_player_x = parent.player.x - parent.player.offset.x;
+					animation.play('bullet', false);
+					x = approach(x, true_player_x + 192, elapsed * (78 * 2));
+			}
 		}
 	}
 }
