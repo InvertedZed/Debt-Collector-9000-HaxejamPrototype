@@ -16,6 +16,8 @@ class Player extends GameSprite
 	public var hitCooldown:Float = 0;
 	public var hitThreshold:Float = 0;
 
+	public var player_health:Float = 0;
+
 	public var canMove:Bool = true;
 
 	public var onSwing:FlxSignal = new FlxSignal();
@@ -102,12 +104,16 @@ class Player extends GameSprite
 			if (controls.pressed.LEFT)
 			{
 				internalX -= (speed * 26) * FlxG.elapsed;
-				flipX = true;
+
+				if (!controls.pressed.RIGHT)
+					flipX = true;
 			}
 			if (controls.pressed.RIGHT)
 			{
 				internalX += (speed * 26) * FlxG.elapsed;
-				flipX = false;
+
+				if (!controls.pressed.LEFT)
+					flipX = false;
 			}
 			if (controls.pressed.UP)
 				internalY -= (speed * 23) * FlxG.elapsed;
@@ -118,7 +124,7 @@ class Player extends GameSprite
 		var animationToPlay = 'idle';
 		var shouldPlayGeneralAnim = true;
 
-		if (controls.pressed.any([LEFT, DOWN, UP, RIGHT]))
+		if (controls.pressed.UP != controls.pressed.DOWN || controls.pressed.LEFT != controls.pressed.RIGHT)
 			animationToPlay = 'walk';
 
 		if (controls.justPressed.any([LEFTHIT, RIGHTHIT, KICK]) && hitCooldown <= 0 && holdTimer <= 0)

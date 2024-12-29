@@ -5,6 +5,7 @@ import backend.Camera;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.text.FlxText;
+import flixel.ui.FlxBar;
 import game.ingame.Background;
 import game.ingame.Player;
 
@@ -16,6 +17,9 @@ class TestState extends FlxState
 	public var info:FlxText;
 
 	public var ui:Camera;
+
+	public var tired_bar:FlxBar;
+	public var health_bar:FlxBar;
 
 	override function create()
 	{
@@ -42,6 +46,18 @@ class TestState extends FlxState
 		info.size = 50;
 		add(info);
 
+		tired_bar = new FlxBar(13 * 4, 3 * 4, TOP_TO_BOTTOM, 10 * 4, 80 * 4);
+		tired_bar.setRange(0, 4);
+		tired_bar.value = player.hitCooldown;
+		tired_bar.createFilledBar(0xff00ff00, 0xffff0000, false);
+		add(tired_bar);
+
+		health_bar = new FlxBar(3 * 4, 3 * 4, TOP_TO_BOTTOM, 10 * 4, 80 * 4);
+		health_bar.setRange(0, 100);
+		health_bar.value = player.player_health;
+		health_bar.createFilledBar(0xff00ff00, 0xffff0000, false);
+		add(health_bar);
+
 		FlxG.camera.pixelPerfectRender = true;
 	}
 
@@ -51,6 +67,18 @@ class TestState extends FlxState
 
 		FlxG.camera.scroll.set(player.x - (FlxG.width / 2) + 64, 0);
 
-		info.text = 'PLAYER POSITION: ${player.getPosition().toString()}\nHOLD TIMER: ${player.holdTimer}\nCOOLDAEFASG: ${player.hitCooldown}\nThresg: ${player.hitThreshold}';
+		// info.text = 'PLAYER POSITION: ${player.getPosition().toString()}\nHOLD TIMER: ${player.holdTimer}\nCOOLDAEFASG: ${player.hitCooldown}\nThresg: ${player.hitThreshold}';
+		if (player.hitCooldown == 0)
+		{
+			tired_bar.createFilledBar(0xff0000ff, 0xffff0000, false);
+			tired_bar.value = player.hitThreshold;
+		}
+		else
+		{
+			tired_bar.createFilledBar(0xff0000c0, 0xffc00000, false);
+			tired_bar.value = player.hitCooldown;
+		}
+		tired_bar.x = player.x - (FlxG.width / 2) + 64 + 13 * 4;
+		health_bar.x = player.x - (FlxG.width / 2) + 64 + 3 * 4;
 	}
 }
