@@ -220,9 +220,9 @@ class Enemy extends GameSprite
 						cooldown = Math.max(0, cooldown);
 						if (cooldown == 0)
 						{
-							yeeted == false;
+							yeeted = false;
 							velocity.x = 0;
-							attack();
+							cooldown = 0;
 						}
 					}
 				case 2:
