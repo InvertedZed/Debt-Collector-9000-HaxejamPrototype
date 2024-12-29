@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="enemy2.png">
+<SubTexture name="walk0000" x="0" y="0" width="52" height="61" frameX="-10" frameY="-2" frameWidth="52" frameHeight="53" />
+<SubTexture name="walk0001" x="52" y="0" width="52" height="60" frameX="-10" frameY="-3" frameWidth="52" frameHeight="53" />
+<SubTexture name="walk0002" x="0" y="61" width="52" height="61" frameX="-10" frameY="-2" frameWidth="52" frameHeight="53" />
+<SubTexture name="walk0003" x="52" y="0" width="52" height="60" frameX="-10" frameY="-3" frameWidth="52" frameHeight="53" />
+<SubTexture name="shoot0000" x="52" y="61" width="70" height="61" frameX="0" frameY="-2" frameWidth="60" frameHeight="53" />
+</TextureAtlas>
