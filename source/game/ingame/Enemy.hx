@@ -46,6 +46,7 @@ class Enemy extends GameSprite
 	public var parent:Game;
 
 	public var dead:Bool = false;
+	public var yeeted:Bool = false;
 
 	public var enemyHealth:Float = 1;
 
@@ -69,6 +70,8 @@ class Enemy extends GameSprite
 			addAnimation(anim.name, anim.fps, anim.looped ?? false, FlxPoint.get(anim.offset[0], anim.offset[1]));
 		}
 
+		animation.play('walk', false);
+
 		if (FlxG.state is Game)
 			this.parent = cast FlxG.state;
 
@@ -87,43 +90,51 @@ class Enemy extends GameSprite
 					case KICK:
 						0;
 				};
-				if (!dead)
+
+				if (hitType == KICK)
 				{
-					if (enemyHealth <= 0)
+					velocity.x = 120 * 4;
+					animation.play('fall', true);
+					yeeted = true;
+					cooldown = 1;
+				}
+			}
+			if (!dead)
+			{
+				if (enemyHealth <= 0)
+				{
+					dead = true;
+
+					FlxG.camera.shake(0.005, 0.3, null, true, X);
+
+					FlxG.sound.play(AssetManager.getSound(enemyType != STANDARD3 ? 'owie' : 'explosion'), 1.2);
+
+					velocity.y = -350;
+					acceleration.y = 550;
+
+					if (enemyType != STANDARD3)
+						velocity.x = FlxG.random.float(-15, 15);
+
+					animation.play(enemyType != STANDARD3 ? 'fall' : 'kaboosh', true);
+
+					centerOffsets();
+
+					x -= 150;
+
+					new FlxTimer().start(2, (tmr) ->
 					{
-						dead = true;
+						kill();
 
-						FlxG.camera.shake(0.005, 0.3, null, true, X);
+						trace('bye bye');
+					});
+				}
+				else
+				{
+					trace('yoouch, that shit hurt bro :(');
 
-						FlxG.sound.play(AssetManager.getSound(enemyType != STANDARD3 ? 'owie' : 'explosion'), 1.2);
+					FlxG.sound.play(AssetManager.getSound('owie'));
 
-						velocity.y = -350;
-						acceleration.y = 550;
-
-						if (enemyType != STANDARD3)
-							velocity.x = FlxG.random.float(-15, 15);
-
-						animation.play(enemyType != STANDARD3 ? 'fall' : 'kaboosh', true);
-
-						centerOffsets();
-
-						x -= 150;
-
-						new FlxTimer().start(2, (tmr) ->
-						{
-							kill();
-
-							trace('bye bye');
-						});
-					}
-					else
-					{
-						trace('yoouch, that shit hurt bro :(');
-
-						FlxG.sound.play(AssetManager.getSound('owie'));
-
-						// super fucking nintendo shit right here
-					}
+					// super fucking nintendo shit right here
 				}
 			}
 		});
@@ -162,40 +173,57 @@ class Enemy extends GameSprite
 			{
 				default:
 				case 1:
-					distanceNeeded = 192;
-					if (cooldown > 0)
+					if (!yeeted)
 					{
-						cooldown -= FlxG.elapsed;
-						var point:FlxPoint = new FlxPoint();
-						if (flipX)
-							point.x = 44 * 4;
-						else
-							point.x = 16 * 4;
-						point.y = 0;
-						offset = point;
-
-						if (cooldown < 0.5)
+						distanceNeeded = 192;
+						if (cooldown > 0)
 						{
+							cooldown -= FlxG.elapsed;
 							var point:FlxPoint = new FlxPoint();
-							point.x = 16 * 4;
+							if (flipX)
+								point.x = 44 * 4;
+							else
+								point.x = 16 * 4;
 							point.y = 0;
 							offset = point;
-							animation.play('walk', false);
+
+							if (cooldown < 0.5)
+							{
+								var point:FlxPoint = new FlxPoint();
+								point.x = 16 * 4;
+								point.y = 0;
+								offset = point;
+								animation.play('walk', false);
+							}
+						}
+						cooldown = Math.max(0, cooldown);
+
+						if (cooldown == 0)
+						{
+							var true_player_x = parent.player.x - parent.player.offset.x;
+							var true_player_y = parent.player.y - parent.player.offset.y;
+							x = approach(x, true_player_x, elapsed * (45 * 2));
+							y = approach(y, true_player_y, elapsed * (45));
+
+							if ((Math.abs(true_player_x - x) <= distanceNeeded))
+								attack();
+
+							flipX = (true_player_x < x);
 						}
 					}
-					cooldown = Math.max(0, cooldown);
-
-					if (cooldown == 0)
+					else
 					{
-						var true_player_x = parent.player.x - parent.player.offset.x;
-						var true_player_y = parent.player.y - parent.player.offset.y;
-						x = approach(x, true_player_x, elapsed * (45 * 2));
-						y = approach(y, true_player_y, elapsed * (45));
-
-						if ((Math.abs(true_player_x - x) <= distanceNeeded))
+						if (cooldown > 0)
+						{
+							cooldown -= FlxG.elapsed * 4;
+						}
+						cooldown = Math.max(0, cooldown);
+						if (cooldown == 0)
+						{
+							yeeted == false;
+							velocity.x = 0;
 							attack();
-
-						flipX = (true_player_x < x);
+						}
 					}
 				case 2:
 					distanceNeeded = 576;
