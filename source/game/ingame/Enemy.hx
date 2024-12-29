@@ -70,7 +70,7 @@ class Enemy extends GameSprite
 
 		parent.player.onSwing.add((hitType) ->
 		{
-			if ((Math.abs(parent.player.x - x) <= distanceNeeded))
+			if (FlxG.pixelPerfectOverlap(parent.player, this))
 			{
 				trace('just hit the mf');
 
@@ -83,20 +83,22 @@ class Enemy extends GameSprite
 					case KICK:
 						0;
 				};
-
-				if (enemyHealth <= 0)
+				if (!dead)
 				{
-					dead = true;
+					if (enemyHealth <= 0)
+					{
+						dead = true;
 
-					FlxG.camera.shake(0.005, 0.3, null, true, X);
-				}
-				else
-				{
-					trace('yoouch, that shit hurt bro :(');
+						FlxG.camera.shake(0.005, 0.3, null, true, X);
+					}
+					else
+					{
+						trace('yoouch, that shit hurt bro :(');
 
-					FlxG.sound.play(AssetManager.getSound('owie'));
+						FlxG.sound.play(AssetManager.getSound('owie'));
 
-					// super fucking nintendo shit right here
+						// super fucking nintendo shit right here
+					}
 				}
 			}
 		});
