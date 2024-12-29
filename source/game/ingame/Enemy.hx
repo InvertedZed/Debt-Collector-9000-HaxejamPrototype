@@ -28,6 +28,7 @@ enum abstract EnemyType(Int) from Int to Int
 	public var STANDARD2:Int = 2;
 	public var STANDARD3:Int = 3;
 	public var BOSS:Int = 4;
+	public var BULLET:Int = 5;
 }
 
 class Enemy extends GameSprite
@@ -35,16 +36,18 @@ class Enemy extends GameSprite
 	private var enemyData:EnemyJson;
 	private var enemyType:EnemyType = STANDARD1;
 
-	public var distanceNeeded:Float = 200;
+	public var distanceNeeded:Float = 192;
 
-	private var cooldown:Float = 1;
+	private var cooldown:Float = 0;
 
 	public var parent:Game;
 
-	public function new(type:EnemyType = STANDARD1)
+	public function new(x:Float = 0, y:Float = 150, type:EnemyType = STANDARD1)
 	{
 		super(0, 0);
-
+		screenCenter();
+		this.x = x;
+		this.y = y;
 		this.enemyType = type;
 
 		frames = AssetManager.getAtlas('gameplay/enemies/enemy${cast (type, Int)}');
@@ -56,10 +59,6 @@ class Enemy extends GameSprite
 		{
 			addAnimation(anim.name, anim.fps, anim.looped ?? false, FlxPoint.get(anim.offset[0], anim.offset[1]));
 		}
-		playAnimation('walk', true);
-
-		screenCenter();
-		y += 150;
 
 		path = new FlxPath([]);
 
@@ -93,6 +92,7 @@ class Enemy extends GameSprite
 		{
 			default:
 			case 1:
+				distanceNeeded = 192;
 				if (cooldown > 0)
 				{
 					cooldown -= FlxG.elapsed;
@@ -119,13 +119,48 @@ class Enemy extends GameSprite
 				{
 					var true_player_x = parent.player.x - parent.player.offset.x;
 					x = approach(x, true_player_x, elapsed * (45 * 2));
-					y = approach(y, parent.player.y - (parent.player.frameHeight / 2), elapsed * (45));
+					// y = approach(y, parent.player.y - (parent.player.frameHeight / 2), elapsed * (45));
 
 					if ((Math.abs(true_player_x - x) <= distanceNeeded))
 						attack();
 
 					flipX = (true_player_x < x);
 				}
+			case 2:
+				distanceNeeded = 576;
+				var true_player_x = parent.player.x - parent.player.offset.x;
+
+				if (Math.abs(true_player_x - x) <= distanceNeeded)
+				{
+					animation.play('shoot', true);
+					var point:FlxPoint = new FlxPoint();
+					if (flipX)
+						point.x = 46 * 4;
+					else
+						point.x = 16 * 4;
+					point.y = 0;
+					offset = point;
+					new Enemy(x, y, 5);
+				}
+				else
+				{
+					x = approach(x, true_player_x + 192, elapsed * (45 * 2));
+					// y = approach(y, parent.player.y - (parent.player.frameHeight / 2), elapsed * (45));
+					animation.play('walk', false);
+					var point:FlxPoint = new FlxPoint();
+					if (flipX)
+						point.x = 36 * 4;
+					else
+						point.x = 16 * 4;
+					point.y = 0;
+					offset = point;
+					flipX = (true_player_x < x);
+				}
+			case 5:
+				var true_player_x = parent.player.x - parent.player.offset.x;
+				animation.play('bullet', false);
+				x = approach(x, true_player_x + 192, elapsed * (192 * 2));
+				trace("hi");
 		}
 	}
 }

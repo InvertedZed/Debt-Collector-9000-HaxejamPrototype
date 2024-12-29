@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="enemy4.png">
+<SubTexture name="bullet0000" x="0" y="0" width="10" height="6" frameX="0" frameY="0" frameWidth="10" frameHeight="6" />
+<SubTexture name="bullet0001" x="0" y="0" width="10" height="6" frameX="0" frameY="0" frameWidth="10" frameHeight="6" />
+</TextureAtlas>

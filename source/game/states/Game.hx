@@ -38,13 +38,11 @@ class Game extends FlxState
 
 		background = new Background(2, player);
 
-		enemyTest = new Enemy(STANDARD1);
-		enemyTest.x += 300;
+		enemyTest = new Enemy(0, 150, BULLET);
+		add(enemyTest);
 
 		add(background);
 		add(player);
-
-		add(enemyTest);
 
 		info = new FlxText();
 		info.font = AssetManager.getFont('default');

@@ -1,0 +1,10 @@
+{
+    "name": "dude you dont need to name a bullet",
+    "animations": [
+        {
+            "name": "bullet",
+            "fps": 1,
+            "offset": [0, 0]
+        }
+    ]
+}
