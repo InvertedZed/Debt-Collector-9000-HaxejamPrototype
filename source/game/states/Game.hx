@@ -9,14 +9,13 @@ import flixel.text.FlxText;
 import flixel.ui.FlxBar;
 import game.ingame.Background;
 import game.ingame.Enemy;
+import game.ingame.MusicHandler;
 import game.ingame.Player;
 
 class Game extends FlxState
 {
 	public var background:Background;
 	public var player:Player;
-
-	public var enemyTest:Enemy;
 
 	public var info:FlxText;
 
@@ -36,14 +35,12 @@ class Game extends FlxState
 		player = new Player();
 		player.initPosition();
 
-		background = new Background(2, player);
-
-		enemyTest = new Enemy(0, 150, STANDARD1);
+		background = new Background(1, player);
 
 		add(background);
 		add(player);
 
-		add(enemyTest);
+		MusicHandler.playMusic(Constants.curLevel);
 
 		info = new FlxText();
 		info.font = AssetManager.getFont('default');
@@ -70,7 +67,7 @@ class Game extends FlxState
 		health_bar.numDivisions = 25;
 		add(health_bar);
 
-		FlxG.camera.pixelPerfectRender = true;
+		FlxG.camera.pixelPerfectRender = ui.pixelPerfectRender = true;
 	}
 
 	override function update(elapsed:Float)

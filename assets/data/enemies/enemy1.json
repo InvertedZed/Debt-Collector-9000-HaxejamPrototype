@@ -15,7 +15,8 @@
         {
             "name": "fall",
             "fps": 5,
-            "offset": [0, 0]
+            "offset": [0, 0],
+            "looped": true
         }
     ]
 }

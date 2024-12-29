@@ -6,6 +6,8 @@ import flixel.FlxG;
 import flixel.math.FlxPoint;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.util.FlxSignal;
+import flixel.util.FlxTimer;
 import game.states.Game;
 import haxe.Json;
 
@@ -46,6 +48,8 @@ class Enemy extends GameSprite
 	public var dead:Bool = false;
 
 	public var enemyHealth:Float = 1;
+
+	public var onFuckingHit:FlxTypedSignal<EnemyType->Void> = new FlxTypedSignal<EnemyType->Void>();
 
 	public function new(x:Float = 0, y:Float = 150, type:EnemyType = STANDARD1)
 	{
@@ -90,6 +94,27 @@ class Enemy extends GameSprite
 						dead = true;
 
 						FlxG.camera.shake(0.005, 0.3, null, true, X);
+
+						FlxG.sound.play(AssetManager.getSound(enemyType != STANDARD3 ? 'owie' : 'explosion'), 1.2);
+
+						velocity.y = -350;
+						acceleration.y = 550;
+
+						if (enemyType != STANDARD3)
+							velocity.x = FlxG.random.float(-15, 15);
+
+						animation.play(enemyType != STANDARD3 ? 'fall' : 'kaboosh', true);
+
+						centerOffsets();
+
+						x -= 150;
+
+						new FlxTimer().start(2, (tmr) ->
+						{
+							kill();
+
+							trace('bye bye');
+						});
 					}
 					else
 					{
@@ -106,10 +131,14 @@ class Enemy extends GameSprite
 
 	public function attack()
 	{
-		if (animation.name != 'punch')
+		var hitAnim:String = enemyType != STANDARD3 ? 'punch' : 'kaboosh';
+
+		if (animation.name != hitAnim)
 		{
 			trace('hit this fucking idiot');
-			animation.play('punch', true);
+			animation.play(hitAnim, true);
+
+			onFuckingHit.dispatch(enemyType);
 		}
 		cooldown = 1;
 	}
@@ -129,7 +158,7 @@ class Enemy extends GameSprite
 
 		if (!dead)
 		{
-			switch (enemyType)
+			switch (enemyType) // undocumented, amazing code, splendid with the sauce... ANIMAL style...... OUTSIDE......... AND AT THE LOCAL KROGER............
 			{
 				default:
 				case 1:

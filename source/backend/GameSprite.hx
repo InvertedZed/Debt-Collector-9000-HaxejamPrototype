@@ -8,22 +8,28 @@ class GameSprite extends FlxSkewedSprite
 {
 	private var offsetMap:Map<String, FlxPoint> = [];
 
-	public function new(x:Float = 0, y:Float = 0, ?graphic:FlxGraphicAsset)
+	var fixOrigin:Bool = true;
+
+	public function new(x:Float = 0, y:Float = 0, ?graphic:FlxGraphicAsset, shouldFixOrigin:Bool = true)
 	{
 		super(x, y, graphic);
+
+		fixOrigin = shouldFixOrigin;
 
 		antialiasing = false;
 
 		scale.set(4, 4);
 
-		origin.set();
+		if (fixOrigin)
+			origin.set();
 	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-		origin.set();
+		if (fixOrigin)
+			origin.set();
 	}
 
 	public function addAnimation(name:String, fps:Int = 5, looped:Bool = false, position:FlxPoint = null)
