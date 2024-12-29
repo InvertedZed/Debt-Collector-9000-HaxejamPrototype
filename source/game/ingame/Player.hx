@@ -17,6 +17,7 @@ class Player extends GameSprite
 	public var hitThreshold:Float = 0;
 
 	public var player_health:Float = 0;
+	public var animationToPlay:String = "idle";
 
 	public var canMove:Bool = true;
 
@@ -58,11 +59,15 @@ class Player extends GameSprite
 
 	public function playAnimation(name:String, forced:Bool = false)
 	{
-		animation.play(name, forced);
 		var point = (offsetMap.get(name) ?? FlxPoint.get()).clone();
-		if (flipX)
-			point.x += point.x;
-		offset.copyFrom(point);
+		if (animationToPlay == 'idle' || animationToPlay == 'walk')
+			point.x = 16 * 4;
+		if (animationToPlay == 'lefthit' || animationToPlay == 'righthit' || animationToPlay == 'kick')
+			point.x = 16 * 4;
+		if ((animationToPlay == 'lefthit' || animationToPlay == 'righthit' || animationToPlay == 'kick') && flipX)
+			point.x = 42 * 4;
+		offset = point;
+		animation.play(name, forced);
 	}
 
 	public function initPosition()
@@ -121,7 +126,7 @@ class Player extends GameSprite
 				internalY += (speed * 23) * FlxG.elapsed;
 		}
 
-		var animationToPlay = 'idle';
+		animationToPlay = 'idle';
 		var shouldPlayGeneralAnim = true;
 
 		if (controls.pressed.UP != controls.pressed.DOWN || controls.pressed.LEFT != controls.pressed.RIGHT)
