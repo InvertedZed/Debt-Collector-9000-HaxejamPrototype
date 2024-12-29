@@ -35,7 +35,7 @@ class Enemy extends GameSprite
 	private var enemyData:EnemyJson;
 	private var enemyType:EnemyType = STANDARD1;
 
-	public var distanceNeeded:Float = 120;
+	public var distanceNeeded:Float = 200;
 
 	private var cooldown:Float = 1;
 
@@ -89,38 +89,43 @@ class Enemy extends GameSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		if (cooldown > 0)
+		switch (enemyType)
 		{
-			cooldown -= FlxG.elapsed;
-			var point:FlxPoint = new FlxPoint();
-			if (flipX)
-				point.x = 44 * 4;
-			else
-				point.x = 16 * 4;
-			point.y = 0;
-			offset = point;
+			default:
+			case 1:
+				if (cooldown > 0)
+				{
+					cooldown -= FlxG.elapsed;
+					var point:FlxPoint = new FlxPoint();
+					if (flipX)
+						point.x = 44 * 4;
+					else
+						point.x = 16 * 4;
+					point.y = 0;
+					offset = point;
 
-			if (cooldown < 0.5)
-			{
-				var point:FlxPoint = new FlxPoint();
-				point.x = 16 * 4;
-				point.y = 0;
-				offset = point;
-				animation.play('walk', false);
-			}
-		}
-		cooldown = Math.max(0, cooldown);
+					if (cooldown < 0.5)
+					{
+						var point:FlxPoint = new FlxPoint();
+						point.x = 16 * 4;
+						point.y = 0;
+						offset = point;
+						animation.play('walk', false);
+					}
+				}
+				cooldown = Math.max(0, cooldown);
 
-		if (cooldown == 0)
-		{
-			var true_player_x = parent.player.x - parent.player.offset.x;
-			x = approach(x, true_player_x, elapsed * (45 * 2));
-			y = approach(y, parent.player.y - (parent.player.frameHeight / 2), elapsed * (45));
+				if (cooldown == 0)
+				{
+					var true_player_x = parent.player.x - parent.player.offset.x;
+					x = approach(x, true_player_x, elapsed * (45 * 2));
+					y = approach(y, parent.player.y - (parent.player.frameHeight / 2), elapsed * (45));
 
-			if ((Math.abs(true_player_x - x) <= distanceNeeded))
-				attack();
+					if ((Math.abs(true_player_x - x) <= distanceNeeded))
+						attack();
 
-			flipX = (true_player_x < x);
+					flipX = (true_player_x < x);
+				}
 		}
 	}
 }

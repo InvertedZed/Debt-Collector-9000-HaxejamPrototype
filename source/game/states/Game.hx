@@ -58,13 +58,13 @@ class Game extends FlxState
 		tired_bar = new FlxBar(13 * 4, 3 * 4, TOP_TO_BOTTOM, 10 * 4, 80 * 4);
 		tired_bar.setRange(0, 4);
 		tired_bar.value = player.hitCooldown;
-		tired_bar.createFilledBar(0xff00ff00, 0xffff0000, false);
+		tired_bar.createFilledBar(0xff00ff00, 0xff000000, false);
 		add(tired_bar);
 
 		health_bar = new FlxBar(3 * 4, 3 * 4, TOP_TO_BOTTOM, 10 * 4, 80 * 4);
 		health_bar.setRange(0, 100);
 		health_bar.value = player.player_health;
-		health_bar.createFilledBar(0xff00ff00, 0xffff0000, false);
+		health_bar.createFilledBar(0xff00ff00, 0xff000000, false);
 		add(health_bar);
 
 		FlxG.camera.pixelPerfectRender = true;
