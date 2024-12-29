@@ -8,7 +8,7 @@ class Camera extends FlxCamera
 	{
 		super.update(elapsed);
 
-		scaleX = scaleY = 2;
+		flashSprite.scaleX = flashSprite.scaleY = 2;
 		setScale(zoom / 2, zoom / 2);
 	}
 }

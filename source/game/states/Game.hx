@@ -38,11 +38,12 @@ class Game extends FlxState
 
 		background = new Background(2, player);
 
-		enemyTest = new Enemy(0, 150, BULLET);
-		add(enemyTest);
+		enemyTest = new Enemy(0, 150, STANDARD1);
 
 		add(background);
 		add(player);
+
+		add(enemyTest);
 
 		info = new FlxText();
 		info.font = AssetManager.getFont('default');
@@ -57,12 +58,16 @@ class Game extends FlxState
 		tired_bar.setRange(0, 4);
 		tired_bar.value = player.hitCooldown;
 		tired_bar.createFilledBar(0xff00ff00, 0xff000000, false);
+		tired_bar.camera = ui;
+		tired_bar.numDivisions = 25;
 		add(tired_bar);
 
 		health_bar = new FlxBar(3 * 4, 3 * 4, TOP_TO_BOTTOM, 10 * 4, 80 * 4);
 		health_bar.setRange(0, 100);
 		health_bar.value = player.player_health;
 		health_bar.createFilledBar(0xff00ff00, 0xff000000, false);
+		health_bar.camera = ui;
+		health_bar.numDivisions = 25;
 		add(health_bar);
 
 		FlxG.camera.pixelPerfectRender = true;
@@ -85,7 +90,5 @@ class Game extends FlxState
 			tired_bar.createFilledBar(0xff0000c0, 0xffc00000, false);
 			tired_bar.value = player.hitCooldown;
 		}
-		tired_bar.x = player.x - (FlxG.width / 2) + 64 + 13 * 4;
-		health_bar.x = player.x - (FlxG.width / 2) + 64 + 3 * 4;
 	}
 }

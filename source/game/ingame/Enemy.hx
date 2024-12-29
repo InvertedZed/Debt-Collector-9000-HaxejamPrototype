@@ -4,7 +4,8 @@ import backend.AssetManager;
 import backend.GameSprite;
 import flixel.FlxG;
 import flixel.math.FlxPoint;
-import flixel.path.FlxPath;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import game.states.Game;
 import haxe.Json;
 
@@ -46,8 +47,8 @@ class Enemy extends GameSprite
 	{
 		super(0, 0);
 		screenCenter();
-		this.x = x;
-		this.y = y;
+		this.x += x;
+		this.y += y;
 		this.enemyType = type;
 
 		frames = AssetManager.getAtlas('gameplay/enemies/enemy${cast (type, Int)}');
@@ -60,10 +61,19 @@ class Enemy extends GameSprite
 			addAnimation(anim.name, anim.fps, anim.looped ?? false, FlxPoint.get(anim.offset[0], anim.offset[1]));
 		}
 
-		path = new FlxPath([]);
-
 		if (FlxG.state is Game)
 			this.parent = cast FlxG.state;
+
+		parent.player.onSwing.add(() ->
+		{
+			if ((Math.abs(parent.player.x - x) <= distanceNeeded))
+			{
+				trace('just hit the mf');
+
+				velocity.y = -150;
+				acceleration.y = 550;
+			}
+		});
 	}
 
 	public function attack()
@@ -118,8 +128,9 @@ class Enemy extends GameSprite
 				if (cooldown == 0)
 				{
 					var true_player_x = parent.player.x - parent.player.offset.x;
+					var true_player_y = parent.player.y - parent.player.offset.y;
 					x = approach(x, true_player_x, elapsed * (45 * 2));
-					// y = approach(y, parent.player.y - (parent.player.frameHeight / 2), elapsed * (45));
+					y = approach(y, true_player_y, elapsed * (45));
 
 					if ((Math.abs(true_player_x - x) <= distanceNeeded))
 						attack();
@@ -159,8 +170,7 @@ class Enemy extends GameSprite
 			case 5:
 				var true_player_x = parent.player.x - parent.player.offset.x;
 				animation.play('bullet', false);
-				x = approach(x, true_player_x + 192, elapsed * (192 * 2));
-				trace("hi");
+				x = approach(x, true_player_x + 192, elapsed * (78 * 2));
 		}
 	}
 }
